@@ -25,10 +25,14 @@ public class UserHelper {
     }
 
     public boolean isUserNotFoundByEmail(String loginEmail) {
-        return !userRepository.findByEmail(loginEmail).isPresent();
+        return userRepository.findByEmail(loginEmail).isEmpty();
     }
 
-    public boolean isNicknameAlreadyExist(String nickname, String newNickname) {
-        return !nickname.equals(newNickname) && userRepository.findByNickname(newNickname).isPresent();
+    public boolean isNicknameAlreadyExist(String loginNickname, String newNickname) {
+        return isNotMyNickname(loginNickname, newNickname) && userRepository.findByNickname(newNickname).isPresent();
+    }
+
+    private boolean isNotMyNickname(String loginNickname, String newNickname) {
+        return !loginNickname.equals(newNickname);
     }
 }

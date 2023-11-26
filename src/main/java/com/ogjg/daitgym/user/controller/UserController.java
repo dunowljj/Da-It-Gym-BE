@@ -50,10 +50,10 @@ public class UserController {
      */
     @GetMapping("/check-duplication")
     public ApiResponse<?> checkNicknameDuplication(
-            @RequestParam("nickname") String nickname,
+            @RequestParam("nickname") String newNickname,
             @AuthenticationPrincipal OAuth2JwtUserDetails userDetails
     ) {
-        String message = userService.checkNicknameDuplication(nickname, userDetails.getNickname());
+        String message = userService.checkNicknameDuplication(userDetails.getNickname(), newNickname);
         return new ApiResponse<>(ErrorCode.SUCCESS.changeMessage(message));
     }
 
