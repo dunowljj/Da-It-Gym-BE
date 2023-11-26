@@ -1,8 +1,8 @@
 package com.ogjg.daitgym.user.service;
 
 import com.ogjg.daitgym.common.exception.user.ForbiddenKaKaoSocial;
+import com.ogjg.daitgym.common.exception.user.InvalidKakaoToken;
 import com.ogjg.daitgym.common.exception.user.NotFoundUser;
-import com.ogjg.daitgym.common.exception.user.NotFoundUserAuthentication;
 import com.ogjg.daitgym.domain.Inbody;
 import com.ogjg.daitgym.domain.UserAuthentication;
 import com.ogjg.daitgym.user.dto.request.KaKaoFriendsRequest;
@@ -59,10 +59,17 @@ public class KakaoFriendService {
             KaKaoFriendsRequest kaKaoFriendsRequest = response.getBody();
             List<KaKaoFriendResponseDto> responseDtoList = new ArrayList<>();
 
+            // todo : 조회시에 탈퇴한 회원에 대한 구분과 처리 필요
             kaKaoFriendsRequest.getElements().forEach(
                     kaKaoFriendsRequestDto -> {
                         UserAuthentication userAuthentication = userAuthenticationRepository.findByProviderId(kaKaoFriendsRequestDto.getId())
-                                .orElseThrow(NotFoundUserAuthentication::new);
+                                .orElse(null);
+
+                        if (userAuthentication == null) {
+                            log.info("해당 providerId가 존재하지 않습니다. id = {}", kaKaoFriendsRequestDto.getId());
+                            return;
+                        }
+//                                .orElseThrow(NotFoundUserAuthentication::new);
 
                         responseDtoList.add(
                                 new KaKaoFriendResponseDto(
@@ -82,6 +89,10 @@ public class KakaoFriendService {
             log.error(e.getMessage());
             throw new ForbiddenKaKaoSocial();
         }
+        catch (HttpClientErrorException.Unauthorized e) {
+            log.error(e.getMessage());
+            throw new InvalidKakaoToken("카카오 Token 오류");
+        }
     }
 
     private String getAccessToken(String email) {
@@ -89,5 +100,4 @@ public class KakaoFriendService {
                 .orElseThrow(NotFoundUser::new)
                 .getAccessToken();
     }
-
 }

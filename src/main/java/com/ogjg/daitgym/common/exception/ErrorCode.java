@@ -16,6 +16,7 @@ public enum ErrorCode implements ErrorType {
     UNAUTHORIZED_USER_ACCESS(HttpStatus.FORBIDDEN, "403", "접근 권한이 부족합니다."),
     WRONG_APPROACH(HttpStatus.FORBIDDEN, "403", "잘못된 접근입니다"),
     FORBIDDEN_KAKAO_SOCIAL(HttpStatus.FORBIDDEN,"403","카카오 정보동의가 필요합니다"),
+    INVALID_KAKAO_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED,"401","카카오 Token이 유효하지 않거나 만료되었습니다."),
 
     //NOT_FOUND
     NOT_FOUNT_USER_AUTHENTICATION(HttpStatus.NOT_FOUND,"404","유저 인증정보를 찾을 수 없습니다"),
