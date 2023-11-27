@@ -177,4 +177,17 @@ public class UserController {
                 userService.getSearchedUsers(nickname, pageable)
         );
     }
+
+    /**
+     * 회원탈퇴를 위한 카카오 아이디 조회
+     */
+    @GetMapping("/kakao-id")
+    public ApiResponse<WithdrawKakaoResponse> getKakaoId(
+            @AuthenticationPrincipal OAuth2JwtUserDetails oAuth2JwtUserDetails
+    ) {
+        return new ApiResponse<>(
+                ErrorCode.SUCCESS,
+                userService.getKakaoId(oAuth2JwtUserDetails.getEmail())
+        );
+    }
 }

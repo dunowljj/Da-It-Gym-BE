@@ -4,14 +4,8 @@ import com.ogjg.daitgym.approval.repository.ApprovalRepository;
 import com.ogjg.daitgym.approval.repository.AwardRepository;
 import com.ogjg.daitgym.approval.repository.CertificationRepository;
 import com.ogjg.daitgym.comment.feedExerciseJournal.exception.WrongApproach;
-import com.ogjg.daitgym.common.exception.user.AlreadyExistNickname;
-import com.ogjg.daitgym.common.exception.user.AlreadyProceedingApproval;
-import com.ogjg.daitgym.common.exception.user.EmptyTrainerApplyException;
-import com.ogjg.daitgym.common.exception.user.NotFoundUser;
-import com.ogjg.daitgym.domain.Approval;
-import com.ogjg.daitgym.domain.HealthClub;
-import com.ogjg.daitgym.domain.Inbody;
-import com.ogjg.daitgym.domain.User;
+import com.ogjg.daitgym.common.exception.user.*;
+import com.ogjg.daitgym.domain.*;
 import com.ogjg.daitgym.domain.follow.Follow;
 import com.ogjg.daitgym.domain.routine.Routine;
 import com.ogjg.daitgym.follow.repository.FollowRepository;
@@ -25,6 +19,7 @@ import com.ogjg.daitgym.user.dto.request.RegisterInbodyRequest;
 import com.ogjg.daitgym.user.dto.response.*;
 import com.ogjg.daitgym.user.repository.HealthClubRepository;
 import com.ogjg.daitgym.user.repository.InbodyRepository;
+import com.ogjg.daitgym.user.repository.UserAuthenticationRepository;
 import com.ogjg.daitgym.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,6 +42,8 @@ import static java.util.stream.Collectors.toList;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final UserAuthenticationRepository userAuthenticationRepository;
 
     private final UserHelper userHelper;
 
@@ -323,5 +320,13 @@ public class UserService {
                 .orElse(0.0);
 
         return (int) (Math.round(sum / inbodies.size()));
+    }
+
+    @Transactional(readOnly = true)
+    public WithdrawKakaoResponse getKakaoId(String loginEmail) {
+        UserAuthentication findAuthentication = userAuthenticationRepository.findByUserEmail(loginEmail)
+                .orElseThrow(NotFoundUserAuthentication::new);
+
+        return WithdrawKakaoResponse.from(findAuthentication);
     }
 }
